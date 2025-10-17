@@ -1,0 +1,30 @@
+[
+  {
+    "instrument": "IF2401",
+    "tick_size": 0.2,
+    "contract_multiplier": 300,
+    "lot_size": 1,
+    "fee_open": 0.00023,
+    "fee_close": 0.00023,
+    "fee_close_today": 0.00046,
+    "fee_type": "percent",
+    "margin_rate": 0.12,
+    "session": "09:30-11:30,13:00-15:00",
+    "slippage_tick": 0.5,
+    "price_limit": true
+  },
+  {
+    "instrument": "RB2410",
+    "tick_size": 1,
+    "contract_multiplier": 10,
+    "lot_size": 1,
+    "fee_open": 3.5,
+    "fee_close": 3.5,
+    "fee_close_today": 3.5,
+    "fee_type": "per_lot",
+    "margin_rate": 0.12,
+    "session": "21:00-23:00,09:00-10:15,10:30-11:30,13:30-15:00",
+    "slippage_tick": 1,
+    "price_limit": false
+  }
+]

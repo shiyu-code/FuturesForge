@@ -1,0 +1,7 @@
+order_id,status,instrument,filled_qty,fill_price,remaining_qty,message
+BT_1,Accepted,IF2401,0,0,1,accepted
+BT_1,Filled,IF2401,1,3899,0,px=3899.000000,qty=1
+BT_2,Accepted,IF2401,0,0,1,accepted
+BT_2,Filled,IF2401,1,3901,0,px=3901.000000,qty=1
+BT_3,Accepted,IF2401,0,0,1,accepted
+BT_3,Filled,IF2401,1,3901,0,px=3901.000000,qty=1

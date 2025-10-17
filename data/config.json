@@ -1,0 +1,30 @@
+{
+  "match_type": "L1_tick",
+  "order_types": [
+    "Limit",
+    "Market",
+    "IOC",
+    "FOK"
+  ],
+  "partial_fill": true,
+  "slippage_model": "fixed_tick",
+  "slippage_tick": 0.5,
+  "slippage_vol_ref": 500,
+  "offset_priority": "SHFE",
+  "report_fmt": [
+    "CSV",
+    "HTML"
+  ],
+  "report_metrics": [
+    "total_ret",
+    "ann_ret",
+    "win_rate",
+    "pls_ratio",
+    "max_dd",
+    "dd_duration",
+    "sharpe",
+    "calmar",
+    "trade_count",
+    "avg_hold_secs"
+  ]
+}
