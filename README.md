@@ -75,31 +75,7 @@ FuturesForge/
   - `TraderProxy`：交易接口代理，统一风控与撮合配置对接。
   - `BarAggregator`：将 Tick 聚合为 Bar 并触发策略。
 
-```mermaid
-flowchart LR
-  subgraph MD[MarketData]
-    BTMD[BacktestMarketData] --> ENG[Engine]
-    STMD[StubMarketData] --> ENG
-    CTPMD[CtpMarketData] --> ENG
-  end
-
-  ENG -- on_tick --> BA[BarAggregator]
-  BA -- on_bar --> STRAT[Strategy (DualMAStrategy)]
-
-  STRAT -- place_order --> PROXY[TraderProxy]
-  PROXY --> BTTR[BacktestTrader]
-  PROXY --> STTR[StubTrader]
-  PROXY --> CTPTR[CtpTrader]
-
-  BTTR -- OrderStatus --> ENG
-  STTR -- OrderStatus --> ENG
-  CTPTR -- OrderStatus --> ENG
-  ENG -- dispatch --> STRAT
-
-  MD --> RM[RiskManager]
-  PROXY --> RM
-  ENG --> CSV[CSV Reports]
-```
+![架构图](data/架构图.png)
 
 - 事件与数据流
   - 行情 Tick：`MarketDataEvent` 进入 `Engine`，并流向 `BarAggregator`、`RiskManager` 与（回测时）`TraderProxy`。
