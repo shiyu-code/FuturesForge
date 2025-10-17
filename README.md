@@ -6,7 +6,7 @@
 ```
 FuturesForge/
 ├─ CMakeLists.txt
-├─ include/FuturesForge/
+├─ include/TradingSystem/
 │  ├─ Event.h
 │  ├─ IMarketData.h
 │  ├─ ITrader.h
@@ -65,16 +65,50 @@ FuturesForge/
 
 > 说明：CTP 接入使用 `ThostMDUserApi.h` / `ThostTraderApi.h`。如你的 SDK 使用不同大小写或路径，确保包含路径正确。
 
-## 开发说明
-- 架构分层：
-  - `IMarketData`/`ITrader` 抽象接口，Stub 与 CTP 封装均实现这些接口。
-  - `Engine` 负责连接、登录、订阅，并将行情事件分发给 `Strategy`；策略可调用交易接口下单。
-  - `Strategy` 示例实现为 `PrintStrategy`，输出行情并在价格超阈值时示意下单。
-- 扩展建议：
-  - 策略框架：新增 `on_order_status`、`on_bar` 等回调，更丰富的事件类型。
-  - 风控模块：开仓限额、止损止盈、断线重连、交易时段控制。
-  - 持仓与账户：实时查询与内存账本一致性校验。
-  - 日志与持久化：滚动日志、关键事件落盘。
+## 架构总览
+- 组件分层
+  - `Engine`：连接/登录/订阅；注册行情与订单事件处理；驱动 `BarAggregator` 与 `Strategy`；输出报表。
+  - `IMarketData` 实现：`BacktestMarketData`（逐 Tick 回放 CSV）、`StubMarketData`、`CtpMarketData`（条件编译）。
+  - `ITrader` 实现：`BacktestTrader`（撮合）、`StubTrader`、`CtpTrader`。
+  - `Strategy`：示例 `DualMAStrategy`（双均线），支持 `on_market_data`、`on_bar`、`on_order_status`。
+  - `RiskManager`：开仓/下单限额、最小间隔；维护持仓与 PnL；按最新价更新未实现盈亏。
+  - `TraderProxy`：交易接口代理，统一风控与撮合配置对接。
+  - `BarAggregator`：将 Tick 聚合为 Bar 并触发策略。
+
+```mermaid
+flowchart LR
+  subgraph MD[MarketData]
+    BTMD[BacktestMarketData] --> ENG[Engine]
+    STMD[StubMarketData] --> ENG
+    CTPMD[CtpMarketData] --> ENG
+  end
+
+  ENG -- on_tick --> BA[BarAggregator]
+  BA -- on_bar --> STRAT[Strategy (DualMAStrategy)]
+
+  STRAT -- place_order --> PROXY[TraderProxy]
+  PROXY --> BTTR[BacktestTrader]
+  PROXY --> STTR[StubTrader]
+  PROXY --> CTPTR[CtpTrader]
+
+  BTTR -- OrderStatus --> ENG
+  STTR -- OrderStatus --> ENG
+  CTPTR -- OrderStatus --> ENG
+  ENG -- dispatch --> STRAT
+
+  MD --> RM[RiskManager]
+  PROXY --> RM
+  ENG --> CSV[CSV Reports]
+```
+
+- 事件与数据流
+  - 行情 Tick：`MarketDataEvent` 进入 `Engine`，并流向 `BarAggregator`、`RiskManager` 与（回测时）`TraderProxy`。
+  - Bar 触发：`BarAggregator` 触发 `Strategy::on_bar`，策略按信号调用 `place_order`。
+  - 下单与撮合：`TraderProxy` 执行风控后调用底层 Trader；回测由 `BacktestTrader` 结合 `meta.json`/`config.json` 完成撮合。
+  - 成交回报：`OrderStatusEvent` 回到 `Engine` 与 `Strategy`，`RiskManager` 更新持仓与盈亏；`Engine` 输出 `trade_log/positions/pnl` 等 CSV。
+
+- 配置与参数
+  - `AppConfig` 支持 `use_backtest`、`backtest_file`、`backtest_speed_ms`、`run_seconds`、`instruments`、风控与策略参数（`strat_ma_fast/slow/threshold`）；通过 `config.ini` 加载并支持 `-c/--config` 指定。
 
 ## 回测模式（逐 Tick 撮合）
 - 构建：默认已包含 `BacktestMarketData.cpp` 与 `BacktestTrader.cpp`，无需额外选项。

@@ -2,9 +2,9 @@
 #include <memory>
 #include <string>
 #include <deque>
-#include "FuturesForge/ITrader.h"
-#include "FuturesForge/RiskManager.h"
-#include "TradingFuturesForgeSystem/IBacktestMatching.h"
+#include "TradingSystem/ITrader.h"
+#include "TradingSystem/RiskManager.h"
+#include "TradingSystem/IBacktestMatching.h"
 
 namespace ts {
 class TraderProxy : public ITrader {
