@@ -3,7 +3,7 @@
 #include "TradingSystem/IMarketData.h"
 #include <string>
 
-// CTP headers
+
 #include "ThostMDUserApi.h"
 
 namespace ts {
@@ -17,7 +17,7 @@ class CtpMarketData : public IMarketData, public CThostFtdcMdSpi {
   bool subscribe(const std::vector<std::string>& instruments) override;
   void set_market_data_handler(MarketDataHandler handler) override;
 
-  // CTP SPI callbacks
+  
   void OnFrontConnected() override;
   void OnFrontDisconnected(int nReason) override;
   void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin,
@@ -32,5 +32,5 @@ class CtpMarketData : public IMarketData, public CThostFtdcMdSpi {
   std::string user_;
   std::string pass_;
 };
-} // namespace ts
+} 
 #endif

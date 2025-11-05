@@ -20,15 +20,15 @@ class TraderProxy : public ITrader {
 
   void set_order_status_handler(OrderStatusHandler handler) override;
 
-  // Backtest辅助：将行情与配置转发给内部撮合器（若支持）
+  
   void on_market_data(const MarketDataEvent& ev);
   void configure_backtest(const std::string& meta_path, const std::string& rules_path);
  private:
   std::unique_ptr<ITrader> inner_;
   RiskManager* risk_;
   OrderStatusHandler user_handler_;
-  // 解决同步回调先于注册的问题：暂存下单请求，收到Accepted后注册
+  
   std::deque<OrderRequest> pending_register_reqs_;
   void emit_order_status(const OrderStatusEvent& ev);
 };
-} // namespace ts
+} 

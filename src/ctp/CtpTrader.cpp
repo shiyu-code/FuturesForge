@@ -48,7 +48,7 @@ std::string CtpTrader::place_order(const OrderRequest& r) {
   return std::to_string(req_id_);
 }
 bool CtpTrader::cancel_order(const std::string& order_id) {
-  // Minimal example; you'd use CThostFtdcInputOrderActionField with appropriate fields.
+  
   std::cout << "[CTP TD] Cancel not implemented in scaffold. Id=" << order_id << std::endl;
   return false;
 }
@@ -77,5 +77,5 @@ void CtpTrader::OnRtnTrade(CThostFtdcTradeField* pTrade) {
   ev.message = "RtnTrade";
   handler_(ev);
 }
-} // namespace ts
+} 
 #endif

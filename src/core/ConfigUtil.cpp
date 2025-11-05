@@ -27,7 +27,7 @@ AppConfig load_app_config(const std::string& path, bool* ok) {
   if (!ifs.good()) {
     if (ok) *ok = false;
     std::cerr << "[Config] cannot open " << path << ", using defaults" << std::endl;
-    // 默认值；保持与示例main一致
+    
     cfg.use_ctp = false;
     cfg.md_front = "stub://md";
     cfg.td_front = "stub://td";
@@ -64,44 +64,44 @@ AppConfig load_app_config(const std::string& path, bool* ok) {
       }
     } else if (key == "bar_interval_sec") {
       try { cfg.bar_interval_sec = std::max(1, std::stoi(val)); }
-      catch (...) { /* keep default */ }
+      catch (...) {  }
     } else if (key == "max_pos_per_instrument") {
       try { cfg.max_pos_per_instrument = std::max(0, std::stoi(val)); }
-      catch (...) { /* keep default */ }
+      catch (...) {  }
     } else if (key == "max_orders_per_bar") {
       try { cfg.max_orders_per_bar = std::max(0, std::stoi(val)); }
-      catch (...) { /* keep default */ }
+      catch (...) {  }
     } else if (key == "min_order_interval_ms") {
       try { cfg.min_order_interval_ms = std::max(0, std::stoi(val)); }
-      catch (...) { /* keep default */ }
+      catch (...) {  }
     } else if (key == "backtest_file") {
       cfg.backtest_file = val;
     } else if (key == "backtest_speed_ms") {
       try { cfg.backtest_speed_ms = std::max(1, std::stoi(val)); }
-      catch (...) { /* keep default */ }
+      catch (...) {  }
     } else if (key == "backtest_meta") {
       cfg.backtest_meta = val;
     } else if (key == "backtest_rules") {
       cfg.backtest_rules = val;
     } else if (key == "run_seconds") {
       try { cfg.run_seconds = std::max(1, std::stoi(val)); }
-      catch (...) { /* keep default */ }
+      catch (...) {  }
     } else if (key == "enable_csv_logs") {
       cfg.enable_csv_logs = parse_bool(val);
     } else if (key == "csv_dir") {
       cfg.csv_dir = val;
     } else if (key == "strat_ma_fast") {
       try { cfg.strat_ma_fast = std::max(1, std::stoi(val)); }
-      catch (...) { /* keep default */ }
+      catch (...) {  }
     } else if (key == "strat_ma_slow") {
       try { cfg.strat_ma_slow = std::max(1, std::stoi(val)); }
-      catch (...) { /* keep default */ }
+      catch (...) {  }
     } else if (key == "strat_threshold") {
       try { cfg.strat_threshold = std::stod(val); }
-      catch (...) { /* keep default */ }
+      catch (...) {  }
     }
   }
   return cfg;
 }
 
-} // namespace ts
+} 

@@ -56,4 +56,4 @@ StubMarketData::~StubMarketData() {
   if (worker_.joinable()) worker_.join();
 }
 
-} // namespace ts
+} 

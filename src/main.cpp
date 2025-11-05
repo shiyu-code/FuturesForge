@@ -26,7 +26,7 @@ public:
       if (fast_ < 1) fast_ = 1; if (slow_ < fast_) slow_ = fast_ + 1;
     }
   void on_market_data(const MarketDataEvent& md, ITrader* trader) override {
-    // 本策略基于Bar触发；Tick仅用于日志或扩展（此处空实现）
+    
     (void)md; (void)trader;
   }
   void on_bar(const BarEvent& bar, ITrader* trader) override {
@@ -71,7 +71,7 @@ private:
 };
 
 int main(int argc, char* argv[]) {
-  // 解析命令行参数：支持 -c/--config 指定配置文件路径
+  
   std::string cfg_path = "config.ini";
   for (int i = 1; i < argc; ++i) {
     std::string arg = argv[i];
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
   if (cfg.use_backtest) {
     md = std::make_unique<BacktestMarketData>(cfg.backtest_speed_ms);
     td = std::make_unique<BacktestTrader>();
-    // 将md_front改为CSV路径以兼容引擎连接流程
+    
     if (!cfg.backtest_file.empty()) cfg.md_front = cfg.backtest_file;
   }
 #ifdef USE_CTP

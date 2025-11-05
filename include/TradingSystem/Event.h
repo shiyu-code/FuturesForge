@@ -8,7 +8,7 @@ namespace ts {
 enum class Direction { Buy, Sell };
 enum class Offset { Open, Close };
 
-// Extend OrderType to support IOC and FOK
+
 enum class OrderType { Limit, Market, IOC, FOK };
 
 struct MarketDataEvent {
@@ -19,7 +19,7 @@ struct MarketDataEvent {
   int volume{0};
   int bid_volume{0};
   int ask_volume{0};
-  std::string update_time; // e.g., "2024-01-01 09:30:00.000"
+  std::string update_time; 
 };
 
 struct OrderRequest {
@@ -33,9 +33,9 @@ struct OrderRequest {
 
 struct OrderStatusEvent {
   std::string order_id;
-  std::string status; // Accepted, Filled, PartiallyFilled, Canceled, Rejected
+  std::string status; 
   std::string message;
-  // 结构化补充字段（可选使用）
+  
   std::string instrument;
   int filled_qty{0};
   double fill_price{0.0};
@@ -49,11 +49,11 @@ struct BarEvent {
   double low{0.0};
   double close{0.0};
   int volume{0};
-  std::string ts; // bar时间戳（简单字符串）
+  std::string ts; 
 };
 
 using MarketDataHandler = std::function<void(const MarketDataEvent&)>;
 using BarEventHandler = std::function<void(const BarEvent&)>;
 using OrderStatusHandler = std::function<void(const OrderStatusEvent&)>;
 
-} // namespace ts
+} 

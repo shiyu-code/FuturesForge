@@ -78,5 +78,5 @@ void CtpMarketData::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* p) {
   handler_(ev);
 }
 
-} // namespace ts
+} 
 #endif

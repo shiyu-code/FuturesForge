@@ -13,7 +13,7 @@ BacktestMarketData::~BacktestMarketData() {
 }
 
 bool BacktestMarketData::connect(const std::string& front) {
-  file_ = front; // front即CSV路径
+  file_ = front; 
   std::cout << "[BTMD] Using file " << file_ << std::endl;
   return true;
 }
@@ -36,7 +36,7 @@ void BacktestMarketData::set_market_data_handler(MarketDataHandler handler) {
 }
 
 static bool looks_like_datetime(const std::string& s) {
-  // 粗略判断是否为日期时间字符串
+  
   return (s.find('-') != std::string::npos) || (s.find(':') != std::string::npos) || (s.find('T') != std::string::npos);
 }
 
@@ -48,12 +48,12 @@ void BacktestMarketData::run_loop() {
     return;
   }
   std::string line;
-  // 支持两种CSV：
-  // 1) instrument,last_price,volume[,bid_price,ask_price,update_time]
-  // 2) instrument,datetime,last_price,bid_price,ask_price,bid_volume,ask_volume,volume,[...]
+  
+  
+  
   while (running_.load() && std::getline(ifs, line)) {
     if (line.empty()) continue;
-    // 跳过可能的表头
+    
     if (line.find("instrument") != std::string::npos && line.find(",") != std::string::npos) continue;
     std::stringstream ss(line);
     std::string tok;
@@ -64,10 +64,10 @@ void BacktestMarketData::run_loop() {
     MarketDataEvent ev;
     ev.instrument = cols[0];
     if (!sub_set_.empty() && sub_set_.find(ev.instrument) == sub_set_.end()) {
-      continue; // 未订阅的合约跳过
+      continue; 
     }
 
-    // 判断格式
+    
     bool fmt2 = (cols.size() >= 8 && looks_like_datetime(cols[1]));
     try {
       if (fmt2) {
@@ -90,7 +90,7 @@ void BacktestMarketData::run_loop() {
         if (cols.size() > 5) ev.update_time = cols[5]; else ev.update_time = "bt";
       }
     } catch (...) {
-      continue; // 非法行
+      continue; 
     }
 
     if (handler_) handler_(ev);
@@ -99,4 +99,4 @@ void BacktestMarketData::run_loop() {
   running_.store(false);
 }
 
-} // namespace ts
+} 

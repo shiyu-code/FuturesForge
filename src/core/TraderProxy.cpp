@@ -23,11 +23,11 @@ std::string TraderProxy::place_order(const OrderRequest& req) {
     emit_order_status(ev);
     return ev.order_id;
   }
-  // 先暂存请求，用于在Accepted事件到来时注册ID
+  
   pending_register_reqs_.push_back(req);
   auto id = inner_->place_order(req);
   risk_->on_order_placed(req.instrument);
-  // 回退保障：若未在Accepted事件处注册，仍进行一次注册
+  
   risk_->register_order(id, req);
   return id;
 }
@@ -38,10 +38,10 @@ bool TraderProxy::cancel_order(const std::string& order_id) {
 
 void TraderProxy::set_order_status_handler(OrderStatusHandler handler) {
   user_handler_ = handler;
-  // 将内部交易的订单状态回调转发到代理层，以便更新风险并通知上层
+  
   inner_->set_order_status_handler([this](const OrderStatusEvent& ev){
     if (risk_) {
-      // 在Accepted到来时绑定ID与原始请求，避免回测撮合同步事件先于注册的问题
+      
       if (ev.status == "Accepted" && !pending_register_reqs_.empty()) {
         auto req = pending_register_reqs_.front();
         pending_register_reqs_.pop_front();
@@ -69,4 +69,4 @@ void TraderProxy::configure_backtest(const std::string& meta_path, const std::st
   }
 }
 
-} // namespace ts
+} 

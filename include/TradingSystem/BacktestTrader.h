@@ -26,7 +26,7 @@ class BacktestTrader : public ITrader, public IBacktestMatching {
   std::string place_order(const OrderRequest& order) override;
   bool cancel_order(const std::string& order_id) override;
 
-  // IBacktestMatching
+  
   void on_market_data(const MarketDataEvent& ev) override;
   void configure(const std::string& meta_path, const std::string& rules_path) override;
 
@@ -48,14 +48,14 @@ class BacktestTrader : public ITrader, public IBacktestMatching {
 
   OrderStatusHandler handler_;
   std::unordered_map<std::string, Tick> last_tick_;
-  std::unordered_map<std::string, std::deque<OrderRec>> pending_; // 每合约的挂单队列（FIFO）
+  std::unordered_map<std::string, std::deque<OrderRec>> pending_; 
   std::unordered_map<std::string, InstrumentMeta> meta_;
 
-  // 规则简版
+  
   bool partial_fill_{true};
   double global_slippage_tick_{0.0};
 
-  // 内部辅助
+  
   double tick_size(const std::string& instr) const;
   double slippage_tick(const std::string& instr) const;
   void try_match(const std::string& instr, const Tick& tk);
@@ -66,4 +66,4 @@ class BacktestTrader : public ITrader, public IBacktestMatching {
                    int remaining_qty = -1);
 };
 
-} // namespace ts
+} 

@@ -58,4 +58,4 @@ std::string BarAggregator::now_string() {
   return ss.str();
 }
 
-} // namespace ts
+} 

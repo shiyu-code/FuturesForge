@@ -16,7 +16,7 @@ class CtpTrader : public ITrader, public CThostFtdcTraderSpi {
   bool cancel_order(const std::string& order_id) override;
   void set_order_status_handler(OrderStatusHandler handler) override;
 
-  // SPI callbacks
+  
   void OnFrontConnected() override;
   void OnFrontDisconnected(int nReason) override;
   void OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUserLogin,

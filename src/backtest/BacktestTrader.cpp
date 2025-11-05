@@ -33,15 +33,15 @@ std::string BacktestTrader::place_order(const OrderRequest& order) {
   rec.req = order;
   rec.remaining = order.volume;
   emit_status(rec.id, "Accepted", "accepted", order.instrument, 0, 0.0, rec.remaining);
-  // 立即处理FOK/IOC
+  
   auto it = last_tick_.find(order.instrument);
   if (it != last_tick_.end()) {
     const auto& tk = it->second;
-    // FOK：仅当能完全成交时执行，否则拒绝
+    
     if (order.type == OrderType::FOK) {
       int avail = (order.direction == Direction::Buy) ? tk.ask_vol : tk.bid_vol;
       bool cross = (order.direction == Direction::Buy) ? (tk.ask <= order.price) : (tk.bid >= order.price);
-      if (order.type == OrderType::Market) cross = true; // 市价必交叉
+      if (order.type == OrderType::Market) cross = true; 
       if (avail >= order.volume && (order.type == OrderType::Market || cross)) {
         pending_[order.instrument].push_back(rec);
         try_match(order.instrument, tk);
@@ -53,7 +53,7 @@ std::string BacktestTrader::place_order(const OrderRequest& order) {
     if (order.type == OrderType::IOC) {
       pending_[order.instrument].push_back(rec);
       try_match(order.instrument, tk);
-      // 剩余部分立即取消
+      
       auto& q = pending_[order.instrument];
       if (!q.empty() && q.front().id == rec.id && q.front().remaining > 0) {
         emit_status(rec.id, "Canceled", "IOC remainder canceled", order.instrument, 0, 0.0, q.front().remaining);
@@ -61,11 +61,11 @@ std::string BacktestTrader::place_order(const OrderRequest& order) {
       }
       return rec.id;
     }
-    // Limit/Market：入队，等待tick撮合或立即尝试
+    
     pending_[order.instrument].push_back(rec);
     try_match(order.instrument, tk);
   } else {
-    // 无行情，直接入队
+    
     pending_[order.instrument].push_back(rec);
   }
   return rec.id;
@@ -92,24 +92,24 @@ void BacktestTrader::on_market_data(const MarketDataEvent& ev) {
 }
 
 void BacktestTrader::configure(const std::string& meta_path, const std::string& rules_path) {
-  // 朴素解析：从meta读取tick_size、multiplier、slippage_tick；从rules读取global slippage与partial_fill
-  // meta示例：[{"instrument":"IF2401","tick_size":0.2,"contract_multiplier":300,"slippage_tick":0.5}, ...]
+  
+  
   std::ifstream mf(meta_path);
   if (mf.good()) {
     std::stringstream buf; buf << mf.rdbuf();
     std::string s = buf.str();
-    // 简单逐项扫描（不严谨，但可用）
+    
     size_t pos = 0;
     while ((pos = s.find("instrument\":\"", pos)) != std::string::npos) {
       pos += 13; size_t end = s.find('"', pos); if (end == std::string::npos) break; std::string instr = s.substr(pos, end-pos);
       InstrumentMeta m;
-      // tick_size
+      
       size_t tpos = s.find("tick_size\":", end);
       if (tpos != std::string::npos) { tpos += 11; m.tick_size = std::stod(s.substr(tpos)); }
-      // contract_multiplier
+      
       size_t mpos = s.find("contract_multiplier\":", end);
       if (mpos != std::string::npos) { mpos += 21; m.contract_multiplier = std::stoi(s.substr(mpos)); }
-      // slippage_tick
+      
       size_t spos = s.find("slippage_tick\":", end);
       if (spos != std::string::npos) { spos += 16; m.slippage_tick = std::stod(s.substr(spos)); }
       meta_[instr] = m;
@@ -159,11 +159,11 @@ void BacktestTrader::try_match(const std::string& instr, const Tick& tk) {
   auto& q = itq->second;
   if (q.empty()) return;
 
-  // 可成交挂量（本tick）
-  int avail_buy = tk.ask_vol; // 买单用ask侧挂量
-  int avail_sell = tk.bid_vol; // 卖单用bid侧挂量
+  
+  int avail_buy = tk.ask_vol; 
+  int avail_sell = tk.bid_vol; 
 
-  // 遍历队列（FIFO），按价格与交叉条件撮合
+  
   for (auto it = q.begin(); it != q.end();) {
     auto& ord = *it;
     double tsz = tick_size(instr);
@@ -189,13 +189,13 @@ void BacktestTrader::try_match(const std::string& instr, const Tick& tk) {
 
     int& avail = is_buy ? avail_buy : avail_sell;
     int fill_qty = 0;
-    // IOC允许部分成交；FOK已在place_order阶段处理为全成或拒绝
+    
     if (!partial_fill_ && ord.req.type != OrderType::IOC) {
-      // 不允许部分成交：当侧量不足以完全成交时，跳过本tick
+      
       if (avail < ord.remaining) { ++it; continue; }
       fill_qty = ord.remaining;
     } else {
-      // 允许部分成交：尽量吃到侧量或订单剩余
+      
       fill_qty = std::min(avail, ord.remaining);
     }
 
@@ -204,7 +204,7 @@ void BacktestTrader::try_match(const std::string& instr, const Tick& tk) {
     ord.remaining -= fill_qty;
     avail -= fill_qty;
 
-    // 四舍五入到tick
+    
     if (tsz > 0) {
       trade_px = std::round(trade_px / tsz) * tsz;
     }
@@ -214,7 +214,7 @@ void BacktestTrader::try_match(const std::string& instr, const Tick& tk) {
       it = q.erase(it);
     } else {
       emit_status(ord.id, "PartiallyFilled", "px=" + std::to_string(trade_px) + ",qty=" + std::to_string(fill_qty), instr, fill_qty, trade_px, ord.remaining);
-      // IOC在本tick后取消剩余
+      
       if (ord.req.type == OrderType::IOC) {
         emit_status(ord.id, "Canceled", "IOC remainder canceled", instr, 0, 0.0, ord.remaining);
         it = q.erase(it);
@@ -223,8 +223,8 @@ void BacktestTrader::try_match(const std::string& instr, const Tick& tk) {
       }
     }
 
-    if (avail <= 0) break; // 当前tick侧量已用尽
+    if (avail <= 0) break; 
   }
 }
 
-} // namespace ts
+} 
