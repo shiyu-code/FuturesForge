@@ -175,7 +175,7 @@ flowchart LR
 
 ## 命令行与配置
 - 指定配置文件：使用 `-c` 或 `--config`，例如：
-  - `build\\bin\\trade_app.exe -c E:\\09Code\\Test\\TradeSystem\\build\\config.ini`
+  - `build\\bin\\trade_app.exe -c .\\config.ini`
 - 关键配置项：
   - `enable_csv_logs=true|false`：启用 CSV 报表输出。
   - `csv_dir=<目录>`：CSV 输出目录；相对路径会在启动时解析为绝对路径并打印提示，建议使用绝对路径以避免工作目录变化导致的混淆。
